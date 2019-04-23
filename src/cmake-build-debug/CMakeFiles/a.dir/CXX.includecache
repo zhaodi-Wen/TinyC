@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/wzd/CLionProjects/a/GLOBALS.H
+stdio.h
+-
+stdlib.h
+-
+ctype.h
+-
+string.h
+-
+
+/home/wzd/CLionProjects/a/MAIN.C
+GLOBALS.H
+/home/wzd/CLionProjects/a/GLOBALS.H
+UTIL.H
+/home/wzd/CLionProjects/a/UTIL.H
+SCAN.H
+/home/wzd/CLionProjects/a/SCAN.H
+PARSE.H
+/home/wzd/CLionProjects/a/PARSE.H
+analyze.h
+/home/wzd/CLionProjects/a/analyze.h
+cgen.h
+/home/wzd/CLionProjects/a/cgen.h
+
+/home/wzd/CLionProjects/a/PARSE.H
+
+/home/wzd/CLionProjects/a/SCAN.H
+
+/home/wzd/CLionProjects/a/UTIL.H
+
+/home/wzd/CLionProjects/a/cgen.h
+

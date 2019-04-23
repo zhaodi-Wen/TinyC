@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/a.dir/MAIN.C.o  -o a 
