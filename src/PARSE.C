@@ -75,27 +75,72 @@ TreeNode * statement(void)
 
 TreeNode * if_stmt(void)
 {          
-   ????          /* ????????????? */
+    TreeNode *t = newStmtNode(IfK);/* �˴�����д���� */
+    match(IF);
+    if(t!=NULL)
+    {
+      t->child[0]=exp();
+      match(THEN);
+      t->child[1]= stmt_sequence();
+      if(token==ELSE)
+      {
+        match(ELSE);
+        t->child[2] = stmt_sequence();
+      }
+    }
+    match(END);
+  return  t;
 }
 
 TreeNode * repeat_stmt(void)
 {
-   ????          /* ????????????? */
+     TreeNode *t = newStmtNode(RepeatK);/* �˴�����д���� */
+     match(REPEAT);
+     if(t!=NULL)
+     {
+         t->child[0] = stmt_sequence();
+         match(UNTIL);
+         t->child[1] = exp();
+     }
+    return t;
 }
 
 TreeNode * assign_stmt(void)
 { 
-   ????          /* ????????????? */
+    TreeNode *t = newStmtNode(AssignK);/* �˴�����д���� */
+    if(t!=NULL && token==ID)
+    {
+        t->attr.name = copyString(tokenString);
+    }
+    match(ID);
+    match(ASSIGN);
+    if(t!=NULL)
+    {
+        t->child[0] = simple_exp();
+    }
+    return  t;
 }
 
 TreeNode * read_stmt(void)
 {
-   ????          /* ????????????? */
+   TreeNode *t = newStmtNode(ReadK);          /* �˴�����д���� */
+    match(READ);
+    if(t!=NULL && token==ID)
+    {
+        t->attr.name = copyString(tokenString);
+    }
+    match(ID);
+    return  t;
 }
 
 TreeNode * write_stmt(void)
 {
-   ????          /* ????????????? */
+   TreeNode *t = newStmtNode(WriteK);          /* �˴�����д���� */
+    match(WRITE);
+    if(t!=NULL)
+        t->child[0]=exp();
+    return t;
+
 }
 
 TreeNode * exp(void)
@@ -116,17 +161,70 @@ TreeNode * exp(void)
 
 TreeNode * simple_exp(void)
 {
-   ????          /* ????????????? */
+   TreeNode*t  = term();         /* �˴�����д���� */
+    if(token==PLUS || token==MINUS)
+    {
+        TreeNode *p = newExpNode(OpK);
+        if(p)
+        {
+            p->child[0]= t;
+            p->attr.op=token;
+            t = p;
+        }
+        match(token);
+        if(t)
+            t->child[1] = simple_exp();
+        return t;
+    }
 }
 
 TreeNode * term(void)
 {
-   ????          /* ????????????? */
+   TreeNode *t = factor();          /* �˴�����д���� */
+    while (token==TIMES || token==OVER)
+    {
+        TreeNode *p = newExpNode(OpK);
+        if(p)
+        {
+            p->child[0] = t;
+            p->attr.op = token;
+            t = p;
+        }
+        match(token);
+        if(t)
+            t->child[1] = simple_exp();
+
+    }
+    return t;
 }
 
 TreeNode * factor(void)
 {
-   ????          /* ????????????? */
+   TreeNode *t = NULL;         /* �˴�����д���� */
+    switch (token){
+        case NUM:
+            t = newExpNode(ConstK);
+            if(t)
+                t->attr.val= atoi(tokenString);
+            match(NUM);
+            break;
+        case ID:
+            t = newExpNode(IdK);
+            if(t) t->attr.name = copyString(tokenString);
+            match(ID);
+            break;
+        case LPAREN:
+            match(LPAREN);
+            t = simple_exp();
+            match(RPAREN);
+            break;
+        default:
+            syntaxError("unexpected token ->");
+            printToken(token,tokenString);
+            token = getToken();
+            break;
+    }
+    return t;
 }
 
 /****************************************/
@@ -136,7 +234,8 @@ TreeNode * factor(void)
  * constructed syntax tree
  */
 TreeNode * parse(void)
-{ TreeNode * t;
+{
+    TreeNode * t;
   token = getToken();
   t = stmt_sequence();
   if (token!=ENDFILE)
