@@ -102,8 +102,55 @@ static void typeError(TreeNode * t, char * message)
  */
 static void checkNode(TreeNode * t)
 { switch (t->nodekind)
-  { case ExpK:    ????          /* ???????д???? */
-    case StmtK:   ????          /* ???????д???? */    
+  { case ExpK:               /* 此处请填写完整 */
+    switch (t->kind.stmt)
+    {
+        case ExpK:
+            switch (t->kind.exp)
+            {
+                case OpK:
+                    if((t->child[0]->type!=Integer)||
+                            (t->child[1]->type!=Integer))
+                        typeError(t,"Op applied to non-integer");
+                    if((t->attr.op ==EQ)||(t->attr.op==LT))
+                        t->type = Boolean;
+                    else
+                        t->type = Integer;
+                    break;
+                case ConstK:
+                case IdK:
+                    t->type = Integer;
+                    break;
+                default:
+                    break;
+            }
+            break;
+    }
+  case StmtK:             /* 此处请填写完整 */
+  switch (t->kind.stmt)
+  {
+      case IfK:
+          if(t->child[0]->type==Integer)
+              typeError(t->child[0],"If test is not Boolean");
+          break;
+      case AssignK:
+          if(t->child[0]->type!=Integer)
+              typeError(t->child[0],"assignment of non-integer value");
+          break;
+      case WriteK:
+          if(t->child[0]->type!=Integer)
+              typeError(t->child[0],"write of non=integer value");
+          break;
+      case RepeatK:
+          if(t->child[1]->type==Integer)
+              typeError(t->child[1],"repeat test is not Boolean");
+          break;
+      default:
+          break;
+  }
+          break;
+      default:
+          break;
   }
 }
 
